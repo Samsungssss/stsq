@@ -4,6 +4,7 @@ import { PassageDisplay } from './PassageDisplay';
 import { AnswerFeedback } from './AnswerFeedback';
 import { validateAnswer } from '../utils/answerValidation';
 import { TextReveal } from './TextReveal';
+import { SmartButton } from './SmartButton';
 
 interface ExamInterfaceProps {
   passages: Passage[];
@@ -87,20 +88,19 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
         </section>
 
         <nav aria-label="Exam controls" className="mx-auto mt-10 flex w-full max-w-[1180px] items-center justify-center gap-3">
-          <button
+          <SmartButton
             type="button"
             onClick={isSubmitted ? handleContinue : handleCheckAnswer}
             disabled={!isSubmitted && selectedSentenceIndex === null}
-            className="min-w-28 bg-black px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-30"
           >
             {isSubmitted ? (isLastQuestion ? 'Finish' : 'Continue') : 'Check Answer'}
-          </button>
-          <button type="button" onClick={onExitToHome} className="bg-black px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-75">
+          </SmartButton>
+          <SmartButton type="button" onClick={onExitToHome} showArrow={false}>
             Restart
-          </button>
-          <button type="button" onClick={onToggleFontSize} className="bg-black px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-75" aria-label="Toggle font size">
+          </SmartButton>
+          <SmartButton type="button" onClick={onToggleFontSize} showArrow={false} aria-label="Toggle font size">
             Font Size: {session.fontSize === 'normal' ? '19px' : '21px'}
-          </button>
+          </SmartButton>
         </nav>
 
         <div className="mx-auto mt-6 min-h-[112px] w-full max-w-[1180px]">
