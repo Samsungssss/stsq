@@ -68,16 +68,13 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
   return (
     <main className="min-h-screen bg-white px-8 py-8 text-black lg:px-12">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1440px] flex-col justify-center">
-        <header className="mb-8 flex items-center justify-between border-b border-black/15 pb-3 font-mono text-xs">
-          <span className="font-bold tracking-wide">QUESTION {session.currentPassageIndex + 1} / {passages.length}</span>
-          <span>{currentPassage.subject} · {formattedTime}</span>
-        </header>
-
-        <section aria-label="TOEFL question" className="mx-auto mb-7 w-full max-w-[1180px]">
-          <p className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.16em] text-indigo-700">Sentence-Selection Practice</p>
-          <TextReveal as="h1" split="words" effect="fade" duration={0.35} key={currentPassage.id} className="text-lg font-semibold leading-snug">
-            {currentPassage.question}
+        <section aria-labelledby="practice-title" className="mx-auto mb-8 w-full max-w-[1180px]">
+          <TextReveal as="h1" split="words" effect="fade" duration={0.35} key={currentPassage.id} className="text-2xl font-semibold leading-tight">
+            Sentence-Selection Practice
           </TextReveal>
+          <p className="mt-3 font-mono text-sm font-bold uppercase tracking-[0.12em] text-black/60">
+            {currentPassage.subject} — {currentPassage.title}
+          </p>
         </section>
 
         <section aria-label="Reading passage" className="mx-auto w-full max-w-[1180px]">

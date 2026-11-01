@@ -14,7 +14,7 @@ export const LetterOptionGroup: React.FC<LetterOptionGroupProps> = ({
   isSubmitted,
 }) => (
   <fieldset className="mt-8" aria-label="Answer options">
-    <legend className="sr-only">Select the sentence that answers the question</legend>
+    <legend className="sr-only">Sentence letter options A through E</legend>
     <div className="flex justify-center gap-3" role="radiogroup" aria-label="Select sentence letter options A through E">
       {OPTION_LETTERS.map((letter, index) => {
         const selected = selectedSentenceIndex === index;
