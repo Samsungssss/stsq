@@ -114,9 +114,10 @@ export default function App() {
   };
 
   const handleToggleFontSize = () => {
+    const sizes: PracticeSession['fontSize'][] = [16, 18, 19, 21, 23, 25];
     setSession((prev) => {
-      const nextSize = prev.fontSize === 'normal' ? 'large' : 'normal';
-      const updated = { ...prev, fontSize: nextSize as 'normal' | 'large' };
+      const nextSize = sizes[(sizes.indexOf(prev.fontSize) + 1) % sizes.length];
+      const updated = { ...prev, fontSize: nextSize };
       saveSession(updated);
       return updated;
     });

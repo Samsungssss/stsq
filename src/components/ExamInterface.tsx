@@ -5,6 +5,7 @@ import { AnswerFeedback } from './AnswerFeedback';
 import { validateAnswer } from '../utils/answerValidation';
 import { TextReveal } from './TextReveal';
 import { SmartButton } from './SmartButton';
+import { LetterOptionGroup } from './LetterOptionGroup';
 
 interface ExamInterfaceProps {
   passages: Passage[];
@@ -71,6 +72,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
         </header>
 
         <section aria-label="TOEFL question" className="mx-auto mb-7 w-full max-w-[1180px]">
+          <p className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.16em] text-indigo-700">Sentence-Selection Practice</p>
           <TextReveal as="h1" split="words" effect="fade" duration={0.35} key={currentPassage.id} className="text-lg font-semibold leading-snug">
             {currentPassage.question}
           </TextReveal>
@@ -87,7 +89,16 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
           />
         </section>
 
-        <nav aria-label="Exam controls" className="mx-auto mt-10 flex w-full max-w-[1180px] items-center justify-center gap-3">
+        <div className="mx-auto w-full max-w-[1180px]">
+          <LetterOptionGroup
+            selectedSentenceIndex={selectedSentenceIndex}
+            correctAnswerIndex={currentPassage.correctAnswerIndex}
+            onSelectOption={handleSelectSentence}
+            isSubmitted={isSubmitted}
+          />
+        </div>
+
+        <nav aria-label="Exam controls" className="mx-auto mt-8 flex w-full max-w-[1180px] items-center justify-center gap-3">
           <SmartButton
             type="button"
             onClick={isSubmitted ? handleContinue : handleCheckAnswer}
@@ -99,19 +110,13 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
             Restart
           </SmartButton>
           <SmartButton type="button" onClick={onToggleFontSize} showArrow={false} aria-label="Toggle font size">
-            Font Size: {session.fontSize === 'normal' ? '19px' : '21px'}
+            Font Size: {session.fontSize}px
           </SmartButton>
         </nav>
 
         <div className="mx-auto mt-6 min-h-[112px] w-full max-w-[1180px]">
           {isSubmitted && currentAnswer && (
-            <AnswerFeedback
-              passage={currentPassage}
-              userAnswer={currentAnswer}
-              onContinue={handleContinue}
-              onRetry={() => {}}
-              isLastQuestion={isLastQuestion}
-            />
+            <AnswerFeedback passage={currentPassage} userAnswer={currentAnswer} />
           )}
         </div>
       </div>

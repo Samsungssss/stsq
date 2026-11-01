@@ -5,9 +5,6 @@ import { indexToLetter } from '../utils/answerValidation';
 interface AnswerFeedbackProps {
   passage: Passage;
   userAnswer: UserAnswer;
-  onContinue: () => void;
-  onRetry: () => void;
-  isLastQuestion: boolean;
 }
 
 export const AnswerFeedback: React.FC<AnswerFeedbackProps> = ({ passage, userAnswer }) => {
@@ -17,15 +14,21 @@ export const AnswerFeedback: React.FC<AnswerFeedbackProps> = ({ passage, userAns
   const distractorNote = selectedIndex !== null ? passage.distractorExplanations[selectedIndex] : null;
 
   return (
-    <div className="border-t border-black/15 pt-3 text-sm leading-relaxed" role="status" aria-live="polite">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+    <section className="border-t border-black/15 pt-4 text-sm leading-relaxed" role="status" aria-live="polite">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
         <span className={`font-mono text-xs font-bold uppercase tracking-wider ${userAnswer.isCorrect ? 'text-emerald-700' : 'text-rose-700'}`}>
           {userAnswer.isCorrect ? 'Correct' : 'Incorrect'}
         </span>
-        {!userAnswer.isCorrect && <span className="font-mono text-xs">Correct answer: {correctLetter} (you chose {selectedLetter})</span>}
-        <span className="text-black/75">{passage.explanation}</span>
+        <span className="font-mono text-xs">
+          {userAnswer.isCorrect ? `Correct answer: ${correctLetter}` : `You chose ${selectedLetter}. Correct answer: ${correctLetter}.`}
+        </span>
       </div>
-      {!userAnswer.isCorrect && distractorNote && <p className="mt-1 text-xs text-black/60">{distractorNote}</p>}
-    </div>
+      {!userAnswer.isCorrect && selectedIndex !== null && (
+        <p className="mt-2 text-black/75"><strong>Your selection ({selectedLetter}):</strong> {passage.sentences[selectedIndex]}</p>
+      )}
+      {!userAnswer.isCorrect && distractorNote && <p className="mt-2 text-black/70">{distractorNote}</p>}
+      <p className="mt-2 text-black/80"><strong>Why {correctLetter} is correct:</strong> {passage.explanation}</p>
+      {!userAnswer.isCorrect && <p className="mt-2 text-black/80"><strong>Correct sentence:</strong> {passage.correctSentence}</p>}
+    </section>
   );
 };

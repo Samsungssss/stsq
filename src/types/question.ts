@@ -29,7 +29,7 @@ export interface PracticeSession {
   isRandomOrder: boolean;
   startedAt: number;
   totalTimeSeconds: number;
-  fontSize: 'normal' | 'large';
+  fontSize: 16 | 18 | 19 | 21 | 23 | 25;
   timerEnabled: boolean;
 }
 
