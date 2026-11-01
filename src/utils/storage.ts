@@ -12,7 +12,7 @@ export function getInitialSession(passageIds: number[], isRandom: boolean = fals
     isRandomOrder: isRandom,
     startedAt: Date.now(),
     totalTimeSeconds: 0,
-    fontSize: 'normal',
+    fontSize: 19,
     timerEnabled: true,
   };
 }
@@ -25,7 +25,9 @@ export function loadSession(passageIds: number[]): PracticeSession {
     }
     const parsed = JSON.parse(raw) as PracticeSession;
     if (parsed && parsed.version === 1 && Array.isArray(parsed.passageOrder)) {
-      return parsed;
+      const legacyFontSize = parsed.fontSize as unknown;
+      const fontSize = legacyFontSize === 'large' ? 21 : legacyFontSize === 'normal' ? 19 : legacyFontSize;
+      return { ...parsed, fontSize: [16, 18, 19, 21, 23, 25].includes(fontSize as number) ? fontSize as PracticeSession['fontSize'] : 19 };
     }
   } catch (e) {
     console.warn('Failed to parse saved session, returning fresh session', e);

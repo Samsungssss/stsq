@@ -7,12 +7,33 @@ import { ExamInterface } from './components/ExamInterface';
 import { ResultsDashboard } from './components/ResultsDashboard';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { DesktopOnlyGuard } from './components/DesktopOnlyGuard';
+import { LegalInformation } from './components/LegalInformation';
 
 export default function App() {
   const allPassageIds = PASSAGES.map((p) => p.id);
   const [session, setSession] = useState<PracticeSession>(() => {
     return loadSession(allPassageIds);
   });
+
+  const [showLegal, setShowLegal] = useState(() => window.location.pathname === '/legal-information');
+
+  useEffect(() => {
+    const handlePopState = () => setShowLegal(window.location.pathname === '/legal-information');
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const openLegal = () => {
+    window.history.pushState({}, '', '/legal-information');
+    setShowLegal(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const closeLegal = () => {
+    window.history.pushState({}, '', '/');
+    setShowLegal(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const [view, setView] = useState<'exam' | 'results'>(() => {
     const loaded = loadSession(allPassageIds);
@@ -114,9 +135,10 @@ export default function App() {
   };
 
   const handleToggleFontSize = () => {
+    const sizes: PracticeSession['fontSize'][] = [16, 18, 19, 21, 23, 25];
     setSession((prev) => {
-      const nextSize = prev.fontSize === 'normal' ? 'large' : 'normal';
-      const updated = { ...prev, fontSize: nextSize as 'normal' | 'large' };
+      const nextSize = sizes[(sizes.indexOf(prev.fontSize) + 1) % sizes.length];
+      const updated = { ...prev, fontSize: nextSize };
       saveSession(updated);
       return updated;
     });
@@ -145,6 +167,9 @@ export default function App() {
   return (
     <DesktopOnlyGuard>
       <div className="relative min-h-screen bg-white text-black selection:bg-black selection:text-white">
+        {showLegal ? (
+          <LegalInformation onBack={closeLegal} />
+        ) : (
         <div className="flex-1 flex flex-col justify-between">
         {view === 'exam' && (
           <ExamInterface
@@ -158,6 +183,7 @@ export default function App() {
             onResetSession={handleRestartExam}
             onExitToHome={handleRestartExam}
             formattedTime={formattedTime}
+            onOpenLegal={openLegal}
           />
         )}
 
@@ -170,6 +196,7 @@ export default function App() {
           />
         )}
         </div>
+        )}
 
         {/* Confirmation Dialog */}
         <ConfirmationModal
