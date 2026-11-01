@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { PASSAGES } from './data/passages';
 import { PracticeSession, UserAnswer } from './types/question';
-import { loadSession, saveSession, clearSession, getInitialSession } from './utils/storage';
+import { loadSession, saveSession, getInitialSession } from './utils/storage';
 import { shuffleArray } from './utils/answerValidation';
-import { LandingPage } from './components/LandingPage';
-import { Header } from './components/Header';
 import { ExamInterface } from './components/ExamInterface';
 import { ResultsDashboard } from './components/ResultsDashboard';
 import { ConfirmationModal } from './components/ConfirmationModal';
-import { Footer } from './components/Footer';
 
 export default function App() {
   const allPassageIds = PASSAGES.map((p) => p.id);
@@ -16,16 +13,12 @@ export default function App() {
     return loadSession(allPassageIds);
   });
 
-  const [view, setView] = useState<'landing' | 'exam' | 'results'>(() => {
+  const [view, setView] = useState<'exam' | 'results'>(() => {
     const loaded = loadSession(allPassageIds);
     if (loaded.isCompleted) {
       return 'results';
     }
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('autostart') === '1') {
-      return 'exam';
-    }
-    return 'landing';
+    return 'exam';
   });
 
   // Modal states
@@ -70,10 +63,6 @@ export default function App() {
     const newSession = getInitialSession(order, isRandom);
     setSession(newSession);
     saveSession(newSession);
-    setView('exam');
-  };
-
-  const handleResume = () => {
     setView('exam');
   };
 
@@ -132,26 +121,17 @@ export default function App() {
     });
   };
 
-  const handlePromptExitHome = () => {
-    const hasUnsavedProgress = Object.values(session.answers).some(
-      (a) => a.isSubmitted
-    );
-
-    if (hasUnsavedProgress && !session.isCompleted) {
-      setConfirmModal({
-        isOpen: true,
-        title: 'Return to Landing Page?',
-        message:
-          'Your progress is automatically saved in your browser. You can resume at any time.',
-        isDestructive: false,
-        action: () => {
-          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
-          setView('landing');
-        },
-      });
-    } else {
-      setView('landing');
-    }
+  const handleRestartExam = () => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Restart Practice Session?',
+      message: 'This will reset all current answers and start a fresh practice session.',
+      isDestructive: true,
+      action: () => {
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        handleStartFresh(session.isRandomOrder);
+      },
+    });
   };
 
   const formattedTime = (() => {
@@ -163,19 +143,7 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen text-black bg-white selection:bg-black selection:text-white flex flex-col justify-between">
-      {/* Slim Announcement Bar — Landing Page Only */}
-      {view === 'landing' && <Header />}
-
       <div className="flex-1 flex flex-col justify-between">
-        {view === 'landing' && (
-          <LandingPage
-            passages={PASSAGES}
-            savedSession={session}
-            onStartFresh={handleStartFresh}
-            onResume={handleResume}
-          />
-        )}
-
         {view === 'exam' && (
           <ExamInterface
             passages={PASSAGES}
@@ -185,8 +153,8 @@ export default function App() {
             onNavigatePassage={handleNavigatePassage}
             onFinishPractice={handleFinishPractice}
             onToggleFontSize={handleToggleFontSize}
-            onResetSession={() => {}}
-            onExitToHome={handlePromptExitHome}
+            onResetSession={handleRestartExam}
+            onExitToHome={handleRestartExam}
             formattedTime={formattedTime}
           />
         )}
@@ -196,13 +164,10 @@ export default function App() {
             passages={PASSAGES}
             session={session}
             onRestart={() => handleStartFresh(session.isRandomOrder)}
-            onReturnHome={() => setView('landing')}
+            onReturnHome={handleRestartExam}
           />
         )}
       </div>
-
-      {/* Footer — Landing Page Only */}
-      {view === 'landing' && <Footer />}
 
       {/* Confirmation Dialog */}
       <ConfirmationModal

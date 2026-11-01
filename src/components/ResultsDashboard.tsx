@@ -17,6 +17,7 @@ import {
 } from '../utils/answerValidation';
 import { MainCTA } from './MainCTA';
 import { TextReveal } from './TextReveal';
+import { LegalLinksBar } from './LegalLinksBar';
 
 interface ResultsDashboardProps {
   passages: Passage[];
@@ -411,6 +412,11 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           })}
         </div>
       </section>
+
+      {/* Legal Links Bar */}
+      <div className="pt-4 pb-2">
+        <LegalLinksBar />
+      </div>
     </div>
   );
 };
