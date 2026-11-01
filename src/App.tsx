@@ -6,6 +6,7 @@ import { shuffleArray } from './utils/answerValidation';
 import { ExamInterface } from './components/ExamInterface';
 import { ResultsDashboard } from './components/ResultsDashboard';
 import { ConfirmationModal } from './components/ConfirmationModal';
+import { DesktopOnlyGuard } from './components/DesktopOnlyGuard';
 
 export default function App() {
   const allPassageIds = PASSAGES.map((p) => p.id);
@@ -142,8 +143,9 @@ export default function App() {
   })();
 
   return (
-    <div className="relative min-h-screen text-black bg-white selection:bg-black selection:text-white flex flex-col justify-between">
-      <div className="flex-1 flex flex-col justify-between">
+    <DesktopOnlyGuard>
+      <div className="relative min-h-screen bg-white text-black selection:bg-black selection:text-white">
+        <div className="flex-1 flex flex-col justify-between">
         {view === 'exam' && (
           <ExamInterface
             passages={PASSAGES}
@@ -167,10 +169,10 @@ export default function App() {
             onReturnHome={handleRestartExam}
           />
         )}
-      </div>
+        </div>
 
-      {/* Confirmation Dialog */}
-      <ConfirmationModal
+        {/* Confirmation Dialog */}
+        <ConfirmationModal
         isOpen={confirmModal.isOpen}
         title={confirmModal.title}
         message={confirmModal.message}
@@ -179,8 +181,9 @@ export default function App() {
         onCancel={() =>
           setConfirmModal((prev) => ({ ...prev, isOpen: false }))
         }
-        isDestructive={confirmModal.isDestructive}
-      />
-    </div>
+          isDestructive={confirmModal.isDestructive}
+        />
+      </div>
+    </DesktopOnlyGuard>
   );
 }
