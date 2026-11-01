@@ -1,7 +1,6 @@
 import React from 'react';
 import { Passage, UserAnswer } from '../types/question';
 import { indexToLetter } from '../utils/answerValidation';
-import { TextReveal } from './TextReveal';
 
 interface PassageDisplayProps {
   passage: Passage;
@@ -27,49 +26,46 @@ export const PassageDisplay: React.FC<PassageDisplayProps> = ({
   isSubmitted,
 }) => (
   <div className="font-reading text-black">
-    <div
+    <p
       className="leading-[1.75] tracking-[-0.01em] selection:bg-black selection:text-white"
       style={{ fontSize: `${fontSize}px` }}
       aria-label="Complete academic passage"
     >
-      <p className="mb-6">{contextualLead(passage)}</p>
-      <p className="mb-6">
-        {passage.sentences.map((sentence, index) => {
-          const letter = indexToLetter(index);
-          const isSelected = selectedSentenceIndex === index;
-          const isCorrect = index === passage.correctAnswerIndex;
-          const isUserPick = userAnswer?.selectedSentenceIndex === index;
-          const treatment = isSubmitted
-            ? isCorrect
-              ? 'bg-emerald-100 ring-1 ring-emerald-700/40'
-              : isUserPick
-                ? 'bg-rose-100 ring-1 ring-rose-700/40'
-                : ''
-            : isSelected
-              ? 'bg-black text-white'
-              : 'hover:bg-black/[0.05]';
+      {contextualLead(passage)}{' '}
+      {passage.sentences.map((sentence, index) => {
+        const letter = indexToLetter(index);
+        const isSelected = selectedSentenceIndex === index;
+        const isCorrect = index === passage.correctAnswerIndex;
+        const isUserPick = userAnswer?.selectedSentenceIndex === index;
+        const treatment = isSubmitted
+          ? isCorrect
+            ? 'bg-emerald-100 ring-1 ring-emerald-700/40'
+            : isUserPick
+              ? 'bg-rose-100 ring-1 ring-rose-700/40'
+              : ''
+          : isSelected
+            ? 'bg-black text-white'
+            : 'hover:bg-black/[0.05]';
+        const [firstWord, ...remainingWords] = sentence.split(' ');
 
-          return (
-            <span key={`${passage.id}-${index}`} className="sentence-grid mb-2 mr-2 align-top">
-              <span className="mr-2 inline-block align-top font-mono text-[0.68em] font-bold leading-[1.75] tracking-wider">{letter}</span>
-              <button
-                type="button"
-                tabIndex={isSubmitted ? -1 : 0}
-                disabled={isSubmitted}
-                aria-pressed={isSelected}
-                aria-label={`Sentence ${letter}: ${sentence}`}
-                className={`rounded-sm px-1 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black ${treatment} ${isSubmitted ? 'cursor-default' : 'cursor-pointer'}`}
-                onClick={() => onSelectSentence(index)}
-              >
-                <TextReveal as="span" split="words" effect="rise" duration={0.28} stagger={0.012} key={`${passage.id}-reveal-${index}`} className="inline">
-                  {sentence}
-                </TextReveal>
-              </button>
-            </span>
-          );
-        })}
-      </p>
-      <p>{contextualClose(passage)}</p>
-    </div>
+        return (
+          <React.Fragment key={`${passage.id}-${index}`}>
+            <button
+              type="button"
+              tabIndex={isSubmitted ? -1 : 0}
+              disabled={isSubmitted}
+              aria-pressed={isSelected}
+              aria-label={`Sentence ${letter}: ${sentence}`}
+              className={`inline rounded-sm px-1 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black ${treatment} ${isSubmitted ? 'cursor-default' : 'cursor-pointer'}`}
+              onClick={() => onSelectSentence(index)}
+            >
+              <span className="whitespace-nowrap font-mono text-[0.68em] font-bold tracking-wider">[{letter}] {firstWord}</span>
+              {remainingWords.length > 0 ? ` ${remainingWords.join(' ')}` : ''}
+            </button>{' '}
+          </React.Fragment>
+        );
+      })}
+      {contextualClose(passage)}
+    </p>
   </div>
 );

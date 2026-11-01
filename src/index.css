@@ -23,12 +23,6 @@
   font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
 }
 
-.sentence-grid {
-  display: inline-grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  max-width: 100%;
-}
-
 .font-mono-code {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
