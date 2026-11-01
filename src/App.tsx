@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PASSAGES } from './data/passages';
-import { Passage, PracticeSession, UserAnswer } from './types/question';
+import { PracticeSession, UserAnswer } from './types/question';
 import { loadSession, saveSession, clearSession, getInitialSession } from './utils/storage';
 import { shuffleArray } from './utils/answerValidation';
 import { LandingPage } from './components/LandingPage';
@@ -8,9 +8,7 @@ import { Header } from './components/Header';
 import { ExamInterface } from './components/ExamInterface';
 import { ResultsDashboard } from './components/ResultsDashboard';
 import { ConfirmationModal } from './components/ConfirmationModal';
-import { AuraBackground } from './components/AuraBackground';
-import { FluidButton } from './components/FluidButton';
-import { Home } from 'lucide-react';
+import { Footer } from './components/Footer';
 
 export default function App() {
   const allPassageIds = PASSAGES.map((p) => p.id);
@@ -134,24 +132,6 @@ export default function App() {
     });
   };
 
-  const handlePromptReset = () => {
-    setConfirmModal({
-      isOpen: true,
-      title: 'Restart Practice Session?',
-      message:
-        'This will reset your current answer selections and restart your examination from Question 01. Are you sure you want to proceed?',
-      isDestructive: true,
-      action: () => {
-        clearSession();
-        const fresh = getInitialSession(allPassageIds, session.isRandomOrder);
-        setSession(fresh);
-        saveSession(fresh);
-        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
-        setView('exam');
-      },
-    });
-  };
-
   const handlePromptExitHome = () => {
     const hasUnsavedProgress = Object.values(session.answers).some(
       (a) => a.isSubmitted
@@ -182,32 +162,21 @@ export default function App() {
   })();
 
   return (
-    <div className="relative min-h-screen text-neutral-900 selection:bg-neutral-200">
-      {/* Shared Ambient Aura Background across the entire website */}
-      <AuraBackground mode={view === 'exam' ? 'subtle' : 'ambient'} />
+    <div className="relative min-h-screen text-black bg-white selection:bg-black selection:text-white flex flex-col justify-between">
+      {/* Slim Announcement Bar — Landing Page Only */}
+      {view === 'landing' && <Header />}
 
-      {view === 'landing' && (
-        <LandingPage
-          passages={PASSAGES}
-          savedSession={session}
-          onStartFresh={handleStartFresh}
-          onResume={handleResume}
-        />
-      )}
-
-      {view === 'exam' && (
-        <div className="min-h-screen flex flex-col justify-between">
-          <Header
+      <div className="flex-1 flex flex-col justify-between">
+        {view === 'landing' && (
+          <LandingPage
             passages={PASSAGES}
-            session={session}
-            currentPassage={currentPassage}
-            onSelectPassage={handleNavigatePassage}
-            onToggleFontSize={handleToggleFontSize}
-            onResetSession={handlePromptReset}
-            onExitToHome={handlePromptExitHome}
-            formattedTime={formattedTime}
+            savedSession={session}
+            onStartFresh={handleStartFresh}
+            onResume={handleResume}
           />
+        )}
 
+        {view === 'exam' && (
           <ExamInterface
             passages={PASSAGES}
             session={session}
@@ -215,49 +184,25 @@ export default function App() {
             onUpdateAnswer={handleUpdateAnswer}
             onNavigatePassage={handleNavigatePassage}
             onFinishPractice={handleFinishPractice}
+            onToggleFontSize={handleToggleFontSize}
+            onResetSession={() => {}}
+            onExitToHome={handlePromptExitHome}
+            formattedTime={formattedTime}
           />
+        )}
 
-          <footer className="w-full border-t border-neutral-200/60 py-4 bg-white/60 backdrop-blur-sm text-center text-xs text-neutral-500 font-mono">
-            <span>TOEFL iBT® Select the Sentence Examination Platform</span>
-          </footer>
-        </div>
-      )}
-
-      {view === 'results' && (
-        <div className="min-h-screen flex flex-col justify-between">
-          <header className="border-b border-neutral-200/80 bg-white/85 backdrop-blur-md sticky top-0 z-20">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-neutral-950 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                  T
-                </div>
-                <span className="font-bold text-sm tracking-tight text-neutral-950">
-                  TOEFL iBT Reading Results
-                </span>
-              </div>
-              <FluidButton
-                variant="outline"
-                size="sm"
-                onClick={() => setView('landing')}
-                icon={<Home className="w-3.5 h-3.5" />}
-              >
-                Return to Home
-              </FluidButton>
-            </div>
-          </header>
-
+        {view === 'results' && (
           <ResultsDashboard
             passages={PASSAGES}
             session={session}
             onRestart={() => handleStartFresh(session.isRandomOrder)}
             onReturnHome={() => setView('landing')}
           />
+        )}
+      </div>
 
-          <footer className="w-full border-t border-neutral-200/60 py-4 bg-white/60 backdrop-blur-sm text-center text-xs text-neutral-500 font-mono">
-            <span>TOEFL iBT® Select the Sentence Examination Platform</span>
-          </footer>
-        </div>
-      )}
+      {/* Footer — Landing Page Only */}
+      {view === 'landing' && <Footer />}
 
       {/* Confirmation Dialog */}
       <ConfirmationModal

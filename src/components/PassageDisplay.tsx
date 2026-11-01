@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, X, Bookmark } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { Passage, UserAnswer } from '../types/question';
 import { indexToLetter } from '../utils/answerValidation';
 
@@ -22,39 +22,22 @@ export const PassageDisplay: React.FC<PassageDisplayProps> = ({
 }) => {
   const fontSizes = {
     normal: {
-      passage: 'text-[17px] sm:text-[18.5px] leading-[2.0]',
-      badge: 'text-xs',
+      passage: 'text-[14px] sm:text-[15.5px] leading-[1.8]',
     },
     large: {
-      passage: 'text-[19px] sm:text-[21px] leading-[2.25]',
-      badge: 'text-sm',
+      passage: 'text-[16px] sm:text-[17.5px] leading-[1.9]',
     },
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E3DC] shadow-xs p-6 sm:p-8 md:p-10 transition-all">
-      {/* Passage Header / Academic Citation Style */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-6 border-b border-slate-100 text-xs text-slate-500 font-mono">
-        <div className="flex items-center gap-2">
-          <Bookmark className="w-3.5 h-3.5 text-amber-700" />
-          <span className="font-bold text-slate-900 tracking-wide uppercase">
-            {passage.subject}
-          </span>
-          <span className="text-slate-300">/</span>
-          <span>{passage.topicCategory}</span>
-        </div>
-        <div className="text-[11px] font-mono text-slate-500">
-          Academic Reading Passage • 5 Labeled Sentences [A]–[E]
-        </div>
-      </div>
-
-      {/* Main Passage with [A] to [E] Labeled Sentences */}
+    <div className="space-y-3 text-black py-2">
+      {/* Main Passage Prose */}
       <div
-        className={`font-academic ${fontSizes[fontSize].passage} text-slate-900 text-left sm:text-justify space-y-3 selection:bg-slate-200`}
+        className={`font-serif ${fontSizes[fontSize].passage} text-black text-left sm:text-justify leading-relaxed selection:bg-black selection:text-white`}
         tabIndex={0}
         aria-label="Academic passage text"
       >
-        <p className="inline">
+        <p className="inline leading-relaxed">
           {passage.sentences.map((sentence, index) => {
             const letter = indexToLetter(index);
             const isSelected = selectedSentenceIndex === index;
@@ -62,45 +45,45 @@ export const PassageDisplay: React.FC<PassageDisplayProps> = ({
             const wasUserPick = userAnswer?.selectedSentenceIndex === index;
 
             let containerClasses =
-              'text-slate-800 hover:bg-[#FAF9F5] hover:text-slate-950 cursor-pointer rounded-lg px-2 py-1 transition-all inline';
+              'text-black hover:bg-neutral-100 cursor-pointer rounded-md px-1 py-0.5 transition-all inline';
             let labelClasses =
-              'font-mono font-bold text-slate-700 mr-2 px-1.5 py-0.5 rounded bg-slate-100 text-[13px] inline-block tracking-wider border border-slate-200';
+              'font-mono font-extrabold text-black bg-neutral-200 border border-neutral-300 mr-1.5 px-1 py-0.5 rounded text-[11px] inline-block tracking-wider';
             let statusBadge: React.ReactNode = null;
 
             if (isSubmitted) {
               if (isCorrectAnswer) {
                 containerClasses =
-                  'bg-emerald-100/80 text-emerald-950 font-medium border-b-2 border-emerald-700 rounded-sm px-1.5 py-0.5 [box-decoration-break:clone] [-webkit-box-decoration-break:clone] inline';
+                  'bg-emerald-50 text-emerald-900 font-bold border-b-2 border-emerald-600 rounded-md px-1 py-0.5 inline ring-1 ring-emerald-500/40';
                 labelClasses =
-                  'font-mono font-bold text-emerald-950 bg-emerald-200 mr-2 px-1.5 py-0.5 rounded text-[13px] inline-block tracking-wider border border-emerald-300';
+                  'font-mono font-extrabold text-white bg-emerald-700 mr-1.5 px-1 py-0.5 rounded text-[11px] inline-block tracking-wider';
                 statusBadge = (
-                  <span className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded bg-emerald-700 text-white font-sans text-[11px] font-bold tracking-wider uppercase align-baseline shadow-2xs whitespace-nowrap">
-                    <Check className="w-3 h-3 stroke-[3]" /> [{letter}] Correct
+                  <span className="inline-flex items-center gap-1 ml-1.5 px-1.5 py-0.5 rounded bg-emerald-700 text-white font-sans text-[9px] font-extrabold tracking-wider uppercase align-baseline whitespace-nowrap">
+                    <Check className="w-2.5 h-2.5 stroke-[3]" /> [{letter}] Correct
                   </span>
                 );
               } else if (wasUserPick && !isCorrectAnswer) {
                 containerClasses =
-                  'bg-rose-100/80 text-rose-950 border-b-2 border-rose-700 rounded-sm px-1.5 py-0.5 line-through decoration-rose-700/70 [box-decoration-break:clone] [-webkit-box-decoration-break:clone] inline';
+                  'bg-rose-50 text-rose-900 border-b-2 border-rose-600 rounded-md px-1 py-0.5 line-through decoration-rose-600/80 inline ring-1 ring-rose-500/40';
                 labelClasses =
-                  'font-mono font-bold text-rose-950 bg-rose-200 mr-2 px-1.5 py-0.5 rounded text-[13px] inline-block tracking-wider border border-rose-300';
+                  'font-mono font-extrabold text-white bg-rose-700 mr-1.5 px-1 py-0.5 rounded text-[11px] inline-block tracking-wider';
                 statusBadge = (
-                  <span className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded bg-rose-700 text-white font-sans text-[11px] font-bold tracking-wider uppercase align-baseline shadow-2xs whitespace-nowrap">
-                    <X className="w-3 h-3 stroke-[3]" /> [{letter}] Your Pick
+                  <span className="inline-flex items-center gap-1 ml-1.5 px-1.5 py-0.5 rounded bg-rose-700 text-white font-sans text-[9px] font-extrabold tracking-wider uppercase align-baseline whitespace-nowrap">
+                    <X className="w-2.5 h-2.5 stroke-[3]" /> [{letter}] Your Pick
                   </span>
                 );
               } else {
-                containerClasses = 'text-slate-400 px-1 py-0.5 inline';
+                containerClasses = 'text-neutral-500 px-1 py-0.5 inline opacity-50';
                 labelClasses =
-                  'font-mono font-medium text-slate-400 mr-2 px-1.5 py-0.5 rounded bg-slate-50 text-[13px] inline-block border border-slate-100';
+                  'font-mono font-bold text-neutral-500 mr-1.5 px-1 py-0.5 rounded bg-neutral-100 text-[11px] inline-block border border-neutral-200';
               }
             } else {
               if (isSelected) {
                 containerClasses =
-                  'bg-blue-100/70 text-slate-950 font-medium border-b-2 border-[#0F243E] rounded-sm px-1.5 py-0.5 [box-decoration-break:clone] [-webkit-box-decoration-break:clone] inline';
+                  'bg-black text-white font-bold rounded-md px-1 py-0.5 inline ring-2 ring-black shadow-xs';
                 labelClasses =
-                  'font-mono font-bold text-white bg-[#0F243E] mr-2 px-1.5 py-0.5 rounded text-[13px] inline-block tracking-wider';
+                  'font-mono font-extrabold text-black bg-white mr-1.5 px-1 py-0.5 rounded text-[11px] inline-block tracking-wider';
                 statusBadge = (
-                  <span className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded bg-[#0F243E] text-white font-sans text-[10px] font-bold tracking-wider uppercase align-baseline shadow-2xs whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1 ml-1.5 px-1.5 py-0.5 rounded bg-white text-black font-sans text-[9px] font-extrabold tracking-wider uppercase align-baseline whitespace-nowrap">
                     Selected [{letter}]
                   </span>
                 );
@@ -125,7 +108,7 @@ export const PassageDisplay: React.FC<PassageDisplayProps> = ({
                   }}
                   aria-pressed={isSelected}
                   aria-label={`Sentence [${letter}]: ${sentence}`}
-                  className={`${containerClasses} focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900`}
+                  className={`${containerClasses} focus:outline-none focus-visible:ring-2 focus-visible:ring-black`}
                 >
                   <span className={labelClasses}>[{letter}]</span>
                   {sentence}
@@ -137,13 +120,13 @@ export const PassageDisplay: React.FC<PassageDisplayProps> = ({
         </p>
       </div>
 
-      {/* Helper caption */}
+      {/* Helper Caption */}
       {!isSubmitted && (
-        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
-          <span>Click a sentence above or select its letter button below.</span>
+        <div className="pt-2 border-t border-neutral-200 flex items-center justify-between text-[11px] text-neutral-600 font-mono font-medium">
+          <span>Click any sentence above or choose letter A–E below.</span>
           {selectedSentenceIndex !== null && (
-            <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-              Sentence [{indexToLetter(selectedSentenceIndex)}] Selected
+            <span className="font-extrabold text-black font-mono text-[11px]">
+              Option [{indexToLetter(selectedSentenceIndex)}] Selected
             </span>
           )}
         </div>

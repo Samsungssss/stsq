@@ -3,13 +3,12 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  Clock,
-  Sparkles,
   Layers,
   Award,
 } from 'lucide-react';
 import { Passage, PracticeSession } from '../types/question';
-import { FluidButton } from './FluidButton';
+import { MainCTA } from './MainCTA';
+import { TextReveal } from './TextReveal';
 
 interface LandingPageProps {
   passages: Passage[];
@@ -19,12 +18,10 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
-  passages,
   savedSession,
   onStartFresh,
   onResume,
 }) => {
-  // Interactive preview state for the live demonstration widget
   const [previewSelected, setPreviewSelected] = useState<number>(2); // Default to C
 
   const hasUnfinishedProgress =
@@ -37,94 +34,64 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     : 0;
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-neutral-200">
-      {/* Sleek Minimal Top Navigation */}
-      <nav className="w-full border-b border-neutral-200/70 bg-white/75 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-neutral-950 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              T
-            </div>
-            <div>
-              <span className="font-extrabold text-sm tracking-tight text-neutral-950 block">
-                TOEFL iBT® Reading
-              </span>
-              <span className="text-[11px] font-mono text-neutral-500 block -mt-0.5">
-                Select the Sentence
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 text-neutral-700 font-mono text-xs font-semibold border border-neutral-200/80 shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              100% Offline Practice
-            </span>
-
-            {hasUnfinishedProgress && (
-              <FluidButton
-                variant="primary"
-                size="sm"
-                onClick={onResume}
-                icon={<ArrowRight className="w-3.5 h-3.5" />}
-                iconPosition="right"
-              >
-                Resume ({completedQuestionsCount}/20)
-              </FluidButton>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content Area */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-20 space-y-16">
+    <div className="min-h-screen bg-white text-black flex flex-col justify-between selection:bg-black selection:text-white">
+      <main className="max-w-4xl mx-auto px-4 sm:px-5 py-6 sm:py-8 space-y-8">
         {/* Hero Section */}
-        <section className="text-center space-y-8" aria-label="Hero">
-          {/* Subtle Platform Tag */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-200/80 bg-white/85 shadow-2xs text-xs font-semibold text-neutral-700">
-            <Sparkles className="w-3.5 h-3.5 text-neutral-600" />
-            <span>Official Examination Practice Suite</span>
-            <span className="text-neutral-300">•</span>
-            <span className="font-mono text-neutral-500">20 Academic Disciplines</span>
+        <section className="text-center space-y-4" aria-label="Hero">
+          {/* Small rounded floating announcement bar */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-300 bg-neutral-100 text-[11px] font-bold text-black shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
+            <span>TOEFL iBT® Select the Sentence Practice</span>
           </div>
 
-          {/* Primary Headlines */}
-          <div className="space-y-4 max-w-2xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-neutral-950 tracking-tight leading-[1.12]">
+          <div className="space-y-2.5 max-w-xl mx-auto">
+            <TextReveal
+              as="h1"
+              split="words"
+              effect="rise"
+              duration={0.5}
+              className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-black tracking-tight leading-[1.15]"
+            >
               Master TOEFL Reading. One Sentence at a Time.
-            </h1>
-            <p className="text-base sm:text-lg text-neutral-600 leading-relaxed font-normal">
-              Improve your reading comprehension with 20 carefully designed academic passages,
-              authentic sentence-selection practice, and instant educational feedback.
-            </p>
+            </TextReveal>
+
+            <TextReveal
+              as="p"
+              split="words"
+              effect="fade"
+              duration={0.6}
+              delay={0.1}
+              className="text-xs sm:text-sm text-neutral-700 leading-relaxed font-medium"
+            >
+              Improve your reading comprehension with 20 carefully designed academic passages, authentic sentence-selection practice, and instant educational feedback.
+            </TextReveal>
           </div>
 
-          {/* Fluid Button CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
-            <FluidButton
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+            <MainCTA
               variant="primary"
-              size="lg"
+              size="md"
               onClick={() => onStartFresh(false)}
-              icon={<ArrowRight className="w-4 h-4" />}
+              icon={<ArrowRight className="w-3.5 h-3.5" />}
               iconPosition="right"
               className="w-full sm:w-auto"
             >
               Start Practicing
-            </FluidButton>
+            </MainCTA>
 
             {hasUnfinishedProgress ? (
-              <FluidButton
+              <MainCTA
                 variant="secondary"
-                size="lg"
+                size="md"
                 onClick={onResume}
                 className="w-full sm:w-auto"
               >
                 Resume Progress ({completedQuestionsCount} of 20)
-              </FluidButton>
+              </MainCTA>
             ) : (
-              <FluidButton
+              <MainCTA
                 variant="outline"
-                size="lg"
+                size="md"
                 onClick={() => {
                   const el = document.getElementById('how-it-works');
                   el?.scrollIntoView({ behavior: 'smooth' });
@@ -132,104 +99,107 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 className="w-full sm:w-auto"
               >
                 How It Works
-              </FluidButton>
+              </MainCTA>
             )}
           </div>
         </section>
 
-        {/* Live Examination Experience Preview */}
+        {/* Live Demonstration Container */}
         <section
-          className="bg-white/90 backdrop-blur-md rounded-2xl border border-neutral-200/90 shadow-sm p-6 sm:p-8 space-y-6 text-left"
+          className="space-y-4 text-left border border-neutral-300 rounded-2xl p-4 sm:p-5 shadow-2xs bg-white"
           aria-label="Interactive Interface Demonstration"
         >
-          <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <span className="text-xs font-mono font-bold tracking-widest text-neutral-500 uppercase">
-                Interactive Examination Demonstration
+          <div className="flex items-center justify-between pb-2 border-b border-neutral-200">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-black" />
+              <span className="text-[11px] font-mono font-extrabold tracking-wider text-black uppercase">
+                Interactive Sentence Selection
               </span>
             </div>
-            <span className="text-xs font-mono text-neutral-500 hidden sm:inline">
-              Try clicking letter buttons below
+            <span className="text-[11px] font-mono text-neutral-600 font-semibold hidden sm:inline">
+              Click letter buttons or sentence text to test selection
             </span>
           </div>
 
-          {/* Question Prompt */}
-          <div className="space-y-1.5">
-            <span className="text-xs font-mono font-bold text-neutral-500 uppercase tracking-wider">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono font-extrabold text-neutral-600 uppercase tracking-wider">
               Paragraph 2 Question
             </span>
-            <p className="text-base sm:text-lg font-bold text-neutral-900 leading-snug">
+            <TextReveal
+              as="p"
+              split="words"
+              effect="rise"
+              duration={0.4}
+              className="text-sm sm:text-base font-extrabold text-black leading-snug"
+            >
               In paragraph 2, which sentence explains the exact physical mechanism by which pollen is transferred to the reproductive organ of a recipient flower?
-            </p>
+            </TextReveal>
           </div>
 
-          {/* Passage with [A] to [E] */}
-          <div className="p-5 sm:p-6 bg-neutral-50/70 rounded-xl border border-neutral-200/80 font-serif text-neutral-800 text-sm sm:text-base leading-relaxed">
+          <div className="font-serif text-black text-xs sm:text-sm leading-relaxed py-1 space-y-1.5">
             <span
               onClick={() => setPreviewSelected(0)}
-              className={`cursor-pointer transition-colors px-1 py-0.5 rounded ${
-                previewSelected === 0 ? 'bg-neutral-950 text-white font-semibold' : 'hover:bg-neutral-200/60'
+              className={`cursor-pointer transition-colors px-1 py-0.5 rounded-md ${
+                previewSelected === 0 ? 'bg-black text-white font-bold' : 'hover:bg-neutral-100'
               }`}
             >
-              <span className="font-mono font-bold text-xs mr-1 opacity-75">[A]</span>
+              <span className="font-mono font-extrabold text-[11px] mr-1">[A]</span>
               Many flowering plants depend on insects to transfer pollen between flowers.
             </span>{' '}
             <span
               onClick={() => setPreviewSelected(1)}
-              className={`cursor-pointer transition-colors px-1 py-0.5 rounded ${
-                previewSelected === 1 ? 'bg-neutral-950 text-white font-semibold' : 'hover:bg-neutral-200/60'
+              className={`cursor-pointer transition-colors px-1 py-0.5 rounded-md ${
+                previewSelected === 1 ? 'bg-black text-white font-bold' : 'hover:bg-neutral-100'
               }`}
             >
-              <span className="font-mono font-bold text-xs mr-1 opacity-75">[B]</span>
+              <span className="font-mono font-extrabold text-[11px] mr-1">[B]</span>
               Pollen grains attach to an insect&apos;s body when it visits a flower in search of nectar.
             </span>{' '}
             <span
               onClick={() => setPreviewSelected(2)}
-              className={`cursor-pointer transition-colors px-1 py-0.5 rounded ${
-                previewSelected === 2 ? 'bg-neutral-950 text-white font-semibold' : 'hover:bg-neutral-200/60'
+              className={`cursor-pointer transition-colors px-1 py-0.5 rounded-md ${
+                previewSelected === 2 ? 'bg-black text-white font-bold' : 'hover:bg-neutral-100'
               }`}
             >
-              <span className="font-mono font-bold text-xs mr-1 opacity-75">[C]</span>
+              <span className="font-mono font-extrabold text-[11px] mr-1">[C]</span>
               When the insect visits another flower, some pollen is deposited on its sticky stigma.
             </span>{' '}
             <span
               onClick={() => setPreviewSelected(3)}
-              className={`cursor-pointer transition-colors px-1 py-0.5 rounded ${
-                previewSelected === 3 ? 'bg-neutral-950 text-white font-semibold' : 'hover:bg-neutral-200/60'
+              className={`cursor-pointer transition-colors px-1 py-0.5 rounded-md ${
+                previewSelected === 3 ? 'bg-black text-white font-bold' : 'hover:bg-neutral-100'
               }`}
             >
-              <span className="font-mono font-bold text-xs mr-1 opacity-75">[D]</span>
+              <span className="font-mono font-extrabold text-[11px] mr-1">[D]</span>
               This process enables fertilization and eventually allows plants to produce seeds.
             </span>{' '}
             <span
               onClick={() => setPreviewSelected(4)}
-              className={`cursor-pointer transition-colors px-1 py-0.5 rounded ${
-                previewSelected === 4 ? 'bg-neutral-950 text-white font-semibold' : 'hover:bg-neutral-200/60'
+              className={`cursor-pointer transition-colors px-1 py-0.5 rounded-md ${
+                previewSelected === 4 ? 'bg-black text-white font-bold' : 'hover:bg-neutral-100'
               }`}
             >
-              <span className="font-mono font-bold text-xs mr-1 opacity-75">[E]</span>
+              <span className="font-mono font-extrabold text-[11px] mr-1">[E]</span>
               Environmental conditions can influence the frequency and efficiency of insect visits.
             </span>
           </div>
 
-          {/* Letter Options A, B, C, D, E */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono font-semibold text-neutral-500">
+          <div className="space-y-1.5 pt-2 border-t border-neutral-200">
+            <div className="flex items-center justify-between text-[11px] font-mono font-extrabold text-black">
               <span>Answer Options (Letter-Only)</span>
               <span>Selected: Option [{['A', 'B', 'C', 'D', 'E'][previewSelected]}]</span>
             </div>
 
-            <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-sm mx-auto sm:mx-0">
+            <div className="grid grid-cols-5 gap-2 max-w-xs mx-auto sm:mx-0">
               {['A', 'B', 'C', 'D', 'E'].map((letter, idx) => (
                 <button
                   key={letter}
                   type="button"
                   onClick={() => setPreviewSelected(idx)}
-                  className={`h-12 rounded-full font-mono text-base font-bold transition-all cursor-pointer ${
+                  className={`h-9 rounded-lg font-mono text-xs font-extrabold transition-all cursor-pointer ${
                     previewSelected === idx
-                      ? 'bg-neutral-950 text-white ring-2 ring-neutral-950 shadow-sm'
-                      : 'bg-white border border-neutral-300 text-neutral-800 hover:bg-neutral-100'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'border border-neutral-300 bg-white text-black hover:bg-neutral-100'
                   }`}
                 >
                   {letter}
@@ -239,147 +209,146 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
         </section>
 
-        {/* Practice Information in Clean Editorial Layout (Phase 5) */}
-        <section className="space-y-6" aria-label="Practice Information">
-          <div className="text-center space-y-1.5">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
+        {/* Practice Architecture Grid */}
+        <section className="space-y-4" aria-label="Practice Information">
+          <div className="text-center space-y-0.5">
+            <h2 className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-neutral-600">
               Examination Structure
             </h2>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-neutral-950 tracking-tight">
-              Curated for Genuine Academic Preparation
-            </h3>
+            <TextReveal
+              as="h3"
+              split="words"
+              effect="rise"
+              className="text-xl sm:text-2xl font-extrabold text-black tracking-tight"
+            >
+              Designed for Authentic Academic Practice
+            </TextReveal>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-neutral-200/80 p-6 space-y-2">
-              <div className="flex items-center gap-2.5 font-bold text-base text-neutral-950">
-                <BookOpen className="w-4 h-4 text-neutral-700" />
-                <span>20 Academic Passages & Questions</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="space-y-1 border-l-2 border-black pl-3 py-1.5 rounded-r-xl border border-neutral-300 p-3 bg-white">
+              <div className="flex items-center gap-1.5 font-extrabold text-xs sm:text-sm text-black">
+                <BookOpen className="w-4 h-4 text-black" />
+                <span>20 Academic Reading Passages</span>
               </div>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Authored across 20 distinct university disciplines including Biology, Archaeology,
-                Economics, Astronomy, Psychology, and Neuroscience.
+              <p className="text-[11px] sm:text-xs text-neutral-700 leading-relaxed font-medium">
+                Covers topics in Biology, Archaeology, Economics, Astronomy, Psychology, Neuroscience, and related fields.
               </p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-neutral-200/80 p-6 space-y-2">
-              <div className="flex items-center gap-2.5 font-bold text-base text-neutral-950">
-                <Layers className="w-4 h-4 text-neutral-700" />
-                <span>Five Letter-Based Answer Choices</span>
+            <div className="space-y-1 border-l-2 border-black pl-3 py-1.5 rounded-r-xl border border-neutral-300 p-3 bg-white">
+              <div className="flex items-center gap-1.5 font-extrabold text-xs sm:text-sm text-black">
+                <Layers className="w-4 h-4 text-black" />
+                <span>Letter-Only Choices [A]–[E]</span>
               </div>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Authentic letter-only options [A] through [E]. No redundant sentence text cluttering
-                the answer buttons, matching modern examination software.
+              <p className="text-[11px] sm:text-xs text-neutral-700 leading-relaxed font-medium">
+                Clickable letter buttons A, B, C, D, E corresponding directly to labeled sentences in the text.
               </p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-neutral-200/80 p-6 space-y-2">
-              <div className="flex items-center gap-2.5 font-bold text-base text-neutral-950">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Instant Answer Checking & Explanations</span>
+            <div className="space-y-1 border-l-2 border-black pl-3 py-1.5 rounded-r-xl border border-neutral-300 p-3 bg-white">
+              <div className="flex items-center gap-1.5 font-extrabold text-xs sm:text-sm text-black">
+                <CheckCircle2 className="w-4 h-4 text-black" />
+                <span>Instant Diagnostic Explanations</span>
               </div>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Immediate verification against local answer keys, with full verbatim target sentences,
-                correct synthesis rationales, and distractor breakdowns.
+              <p className="text-[11px] sm:text-xs text-neutral-700 leading-relaxed font-medium">
+                Local evaluation displays verbatim correct target quotes and educational distractor breakdowns.
               </p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-neutral-200/80 p-6 space-y-2">
-              <div className="flex items-center gap-2.5 font-bold text-base text-neutral-950">
-                <Award className="w-4 h-4 text-neutral-700" />
-                <span>Fully Offline & Local Practice</span>
+            <div className="space-y-1 border-l-2 border-black pl-3 py-1.5 rounded-r-xl border border-neutral-300 p-3 bg-white">
+              <div className="flex items-center gap-1.5 font-extrabold text-xs sm:text-sm text-black">
+                <Award className="w-4 h-4 text-black" />
+                <span>100% Client-Side Persistence</span>
               </div>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                All 20 questions, answer keys, and progress persistence run entirely within your
-                browser. Zero external API calls, tracking, or connectivity requirements.
+              <p className="text-[11px] sm:text-xs text-neutral-700 leading-relaxed font-medium">
+                All 20 questions and progress persistence run locally in your browser. Zero backend dependency.
               </p>
             </div>
           </div>
         </section>
 
         {/* How It Works (3 Steps) */}
-        <section id="how-it-works" className="space-y-8 scroll-mt-24" aria-label="How It Works">
-          <div className="text-center space-y-1.5">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
+        <section id="how-it-works" className="space-y-4 scroll-mt-10" aria-label="How It Works">
+          <div className="text-center space-y-0.5">
+            <h2 className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-neutral-600">
               Exam Strategy
             </h2>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-neutral-950 tracking-tight">
-              How the Question Type Works
-            </h3>
+            <TextReveal
+              as="h3"
+              split="words"
+              effect="rise"
+              className="text-xl sm:text-2xl font-extrabold text-black tracking-tight"
+            >
+              Three Simple Practice Steps
+            </TextReveal>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-neutral-200/90 p-6 space-y-3">
-              <div className="w-8 h-8 rounded-full bg-neutral-950 text-white font-mono font-bold text-sm flex items-center justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="space-y-2 border border-neutral-300 rounded-xl p-4 shadow-2xs bg-white">
+              <div className="w-6 h-6 rounded-full bg-black text-white font-mono font-extrabold text-[11px] flex items-center justify-center">
                 1
               </div>
-              <h4 className="font-bold text-base text-neutral-950">Read the Academic Passage</h4>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Analyze the paragraph structure and locate the specific claim, physical mechanism,
-                or contrast requested in the question prompt.
+              <h4 className="font-extrabold text-xs sm:text-sm text-black">Read Passage & Question</h4>
+              <p className="text-[11px] sm:text-xs text-neutral-700 leading-relaxed font-medium">
+                Identify the claim, physical mechanism, or contrast requested in the paragraph prompt.
               </p>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-neutral-200/90 p-6 space-y-3">
-              <div className="w-8 h-8 rounded-full bg-neutral-950 text-white font-mono font-bold text-sm flex items-center justify-center">
+            <div className="space-y-2 border border-neutral-300 rounded-xl p-4 shadow-2xs bg-white">
+              <div className="w-6 h-6 rounded-full bg-black text-white font-mono font-extrabold text-[11px] flex items-center justify-center">
                 2
               </div>
-              <h4 className="font-bold text-base text-neutral-950">Select Sentence A, B, C, D, or E</h4>
-              <p className="text-sm text-neutral-600 leading-relaxed">
+              <h4 className="font-extrabold text-xs sm:text-sm text-black">Select Sentence A–E</h4>
+              <p className="text-[11px] sm:text-xs text-neutral-700 leading-relaxed font-medium">
                 Click directly on the labeled sentence or choose its corresponding letter button.
-                Only one option is active at any time.
               </p>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-neutral-200/90 p-6 space-y-3">
-              <div className="w-8 h-8 rounded-full bg-neutral-950 text-white font-mono font-bold text-sm flex items-center justify-center">
+            <div className="space-y-2 border border-neutral-300 rounded-xl p-4 shadow-2xs bg-white">
+              <div className="w-6 h-6 rounded-full bg-black text-white font-mono font-extrabold text-[11px] flex items-center justify-center">
                 3
               </div>
-              <h4 className="font-bold text-base text-neutral-950">Check & Understand Rationale</h4>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Submit your choice for instant evaluation. Study the exact quote, why it satisfies
-                the prompt, and why other sentences are distractors.
+              <h4 className="font-extrabold text-xs sm:text-sm text-black">Check Rationale</h4>
+              <p className="text-[11px] sm:text-xs text-neutral-700 leading-relaxed font-medium">
+                Submit for instant feedback. Study why the quote is correct and why other choices are distractors.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Final Call to Action */}
+        {/* Final CTA */}
         <section
-          className="bg-neutral-950 text-white rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-md"
+          className="text-center space-y-3 py-6 border border-neutral-300 rounded-2xl p-6 shadow-2xs bg-white"
           aria-label="Final Call to Action"
         >
-          <div className="space-y-2 max-w-xl mx-auto">
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <div className="space-y-1.5 max-w-md mx-auto">
+            <TextReveal
+              as="h3"
+              split="words"
+              effect="rise"
+              className="text-xl sm:text-2xl font-extrabold tracking-tight text-black"
+            >
               Ready to Practice Select the Sentence?
-            </h3>
-            <p className="text-sm sm:text-base text-neutral-300 leading-relaxed">
-              Begin your 20-passage academic reading session now. Master the interaction, refine
-              your pacing, and review comprehensive answer rationales.
+            </TextReveal>
+            <p className="text-xs text-neutral-700 leading-relaxed font-medium">
+              Begin your 20-passage practice session now. Master the interaction and refine your reading speed.
             </p>
           </div>
 
-          <div className="pt-2 flex justify-center">
-            <FluidButton
-              variant="secondary"
-              size="lg"
+          <div className="pt-1 flex justify-center">
+            <MainCTA
+              variant="primary"
+              size="md"
               onClick={() => onStartFresh(false)}
-              icon={<ArrowRight className="w-4 h-4" />}
+              icon={<ArrowRight className="w-3.5 h-3.5" />}
               iconPosition="right"
             >
               Start Practicing Now
-            </FluidButton>
+            </MainCTA>
           </div>
         </section>
       </main>
-
-      {/* Minimal Footer */}
-      <footer className="w-full border-t border-neutral-200/70 bg-white/60 backdrop-blur-sm py-6 mt-12 text-center text-xs text-neutral-500 font-mono">
-        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>TOEFL iBT® Select the Sentence Practice Platform</span>
-          <span>100% Client-Side • Local Evaluation • 20 Academic Passages</span>
-        </div>
-      </footer>
     </div>
   );
 };

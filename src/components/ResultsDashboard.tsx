@@ -15,7 +15,8 @@ import {
   getReadingBandEstimate,
   indexToLetter,
 } from '../utils/answerValidation';
-import { FluidButton } from './FluidButton';
+import { MainCTA } from './MainCTA';
+import { TextReveal } from './TextReveal';
 
 interface ResultsDashboardProps {
   passages: Passage[];
@@ -36,7 +37,6 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
   const stats = calculateSessionStats(passages, session.answers, session.totalTimeSeconds);
   const bandInfo = getReadingBandEstimate(stats.correctCount, stats.totalQuestions);
 
-  // Filter questions for the review list
   const reviewItems = session.passageOrder
     .map((id, index) => {
       const passage = passages.find((p) => p.id === id);
@@ -60,205 +60,207 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
     return `${mins}m ${secs < 10 ? '0' : ''}${secs}s`;
   };
 
-  // Circular gauge calculations
-  const radius = 56;
+  const radius = 46;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset =
-    circumference - (stats.accuracyPercentage / 100) * circumference;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 animate-in fade-in duration-300">
-      {/* Top Banner */}
-      <div className="text-center space-y-2.5">
-        <span className="inline-block px-3.5 py-1.5 rounded-full bg-white/90 text-neutral-800 text-xs font-mono font-bold tracking-wider uppercase border border-neutral-200/80 shadow-2xs">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 bg-white text-black min-h-screen">
+      {/* Top Header */}
+      <div className="text-center space-y-1.5">
+        <span className="inline-block px-3 py-0.5 rounded-full border border-neutral-300 bg-neutral-100 text-black text-[11px] font-mono font-extrabold tracking-wider uppercase shadow-2xs">
           Examination Summary • 20 Academic Passages
         </span>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-neutral-950 tracking-tight">
+        <TextReveal
+          as="h1"
+          split="words"
+          effect="rise"
+          className="text-xl sm:text-2xl md:text-3xl font-extrabold text-black tracking-tight"
+        >
           TOEFL Practice Results
-        </h1>
-        <p className="text-sm text-neutral-600 max-w-lg mx-auto">
+        </TextReveal>
+        <p className="text-xs text-neutral-600 font-medium max-w-md mx-auto">
           You have completed all 20 academic reading passages in the Select the Sentence module.
         </p>
       </div>
 
-      {/* Main Scorecard */}
-      <div className="bg-white/92 backdrop-blur-md rounded-2xl border border-neutral-200/90 shadow-xs p-6 sm:p-9">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+      {/* Main Score & Metrics Container */}
+      <div className="border border-neutral-300 rounded-xl p-4 sm:p-5 shadow-2xs space-y-4 bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           {/* Circular Score Gauge */}
-          <div className="md:col-span-5 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-neutral-100 pb-6 md:pb-0 md:pr-6">
-            <div className="relative w-40 h-40 flex items-center justify-center">
+          <div className="md:col-span-5 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-neutral-200 pb-4 md:pb-0 md:pr-4">
+            <div className="relative w-24 h-24 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90">
                 <circle
-                  cx="80"
-                  cy="80"
-                  r={radius}
-                  className="text-neutral-100"
-                  strokeWidth="9"
+                  cx="48"
+                  cy="48"
+                  r={radius - 6}
+                  className="text-neutral-200"
+                  strokeWidth="7"
                   stroke="currentColor"
                   fill="transparent"
                 />
                 <circle
-                  cx="80"
-                  cy="80"
-                  r={radius}
-                  className="text-neutral-950 transition-all duration-1000 ease-out"
-                  strokeWidth="9"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
+                  cx="48"
+                  cy="48"
+                  r={radius - 6}
+                  className="text-black transition-all duration-1000 ease-out"
+                  strokeWidth="7"
+                  strokeDasharray={2 * Math.PI * (radius - 6)}
+                  strokeDashoffset={2 * Math.PI * (radius - 6) - (stats.accuracyPercentage / 100) * 2 * Math.PI * (radius - 6)}
                   strokeLinecap="round"
                   stroke="currentColor"
                   fill="transparent"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-extrabold font-mono text-neutral-950 tracking-tighter">
+                <span className="text-xl font-extrabold font-mono text-black tracking-tighter">
                   {stats.accuracyPercentage}%
                 </span>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 font-bold">
+                <span className="text-[9px] font-mono uppercase tracking-wider text-neutral-600 font-extrabold">
                   Accuracy
                 </span>
               </div>
             </div>
 
-            <div className="mt-4 space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-900 font-bold text-xs">
+            <div className="mt-2 space-y-0.5">
+              <div className="inline-flex items-center gap-1.5 font-extrabold text-xs text-black">
                 <span>Estimated Band:</span>
-                <span className="font-mono text-sm">{bandInfo.band}</span>
+                <span className="font-mono text-xs text-emerald-700">{bandInfo.band}</span>
               </div>
-              <p className="text-xs text-neutral-500 font-medium">Scaled Score: {bandInfo.toeflScoreRange}</p>
+              <p className="text-[10px] text-neutral-600 font-bold">Scaled Score: {bandInfo.toeflScoreRange}</p>
             </div>
           </div>
 
           {/* Metric Tiles */}
-          <div className="md:col-span-7 grid grid-cols-2 gap-3.5">
-            <div className="bg-neutral-50/80 rounded-xl p-4 border border-neutral-200/80">
-              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-semibold mb-1">
+          <div className="md:col-span-7 grid grid-cols-2 gap-3">
+            <div className="border-l-2 border-emerald-600 pl-2.5 py-1 rounded-r-lg p-2.5 border border-neutral-200 bg-neutral-50">
+              <div className="flex items-center gap-1 text-[11px] text-neutral-700 font-extrabold mb-0.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Correct Answers</span>
+                <span>Correct</span>
               </div>
-              <div className="text-2xl font-bold text-neutral-950 font-mono">
+              <div className="text-xl font-extrabold text-black font-mono">
                 {stats.correctCount}
               </div>
-              <div className="text-xs text-neutral-500 mt-0.5 font-mono">
+              <div className="text-[10px] text-neutral-500 font-mono font-medium">
                 of {passages.length} questions
               </div>
             </div>
 
-            <div className="bg-neutral-50/80 rounded-xl p-4 border border-neutral-200/80">
-              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-semibold mb-1">
+            <div className="border-l-2 border-rose-600 pl-2.5 py-1 rounded-r-lg p-2.5 border border-neutral-200 bg-neutral-50">
+              <div className="flex items-center gap-1 text-[11px] text-neutral-700 font-extrabold mb-0.5">
                 <XCircle className="w-3.5 h-3.5 text-rose-600" />
-                <span>Incorrect Answers</span>
+                <span>Incorrect</span>
               </div>
-              <div className="text-2xl font-bold text-neutral-950 font-mono">
+              <div className="text-xl font-extrabold text-black font-mono">
                 {stats.incorrectCount}
               </div>
-              <div className="text-xs text-neutral-500 mt-0.5 font-mono">
+              <div className="text-[10px] text-neutral-500 font-mono font-medium">
                 reviewed below
               </div>
             </div>
 
-            <div className="bg-neutral-50/80 rounded-xl p-4 border border-neutral-200/80">
-              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-semibold mb-1">
-                <Clock className="w-3.5 h-3.5 text-neutral-500" />
+            <div className="border-l-2 border-black pl-2.5 py-1 rounded-r-lg p-2.5 border border-neutral-200 bg-neutral-50">
+              <div className="flex items-center gap-1 text-[11px] text-neutral-700 font-extrabold mb-0.5">
+                <Clock className="w-3.5 h-3.5 text-black" />
                 <span>Total Time</span>
               </div>
-              <div className="text-2xl font-bold text-neutral-950 font-mono">
+              <div className="text-xl font-extrabold text-black font-mono">
                 {formatSeconds(stats.totalTimeSeconds)}
               </div>
-              <div className="text-xs text-neutral-500 mt-0.5 font-mono">
+              <div className="text-[10px] text-neutral-500 font-mono font-medium">
                 active practice
               </div>
             </div>
 
-            <div className="bg-neutral-50/80 rounded-xl p-4 border border-neutral-200/80">
-              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-semibold mb-1">
-                <Award className="w-3.5 h-3.5 text-neutral-500" />
-                <span>Pacing Average</span>
+            <div className="border-l-2 border-black pl-2.5 py-1 rounded-r-lg p-2.5 border border-neutral-200 bg-neutral-50">
+              <div className="flex items-center gap-1 text-[11px] text-neutral-700 font-extrabold mb-0.5">
+                <Award className="w-3.5 h-3.5 text-black" />
+                <span>Pacing Avg</span>
               </div>
-              <div className="text-2xl font-bold text-neutral-950 font-mono">
+              <div className="text-xl font-extrabold text-black font-mono">
                 {stats.averageTimePerQuestion}s
               </div>
-              <div className="text-xs text-neutral-500 mt-0.5 font-mono">
+              <div className="text-[10px] text-neutral-500 font-mono font-medium">
                 per passage
               </div>
             </div>
           </div>
         </div>
 
-        {/* Pedagogical Strategy Advice Note */}
-        <div className="mt-6 pt-6 border-t border-neutral-100 bg-neutral-50/60 rounded-xl p-4 sm:p-5 border border-neutral-200/60">
-          <h4 className="text-xs font-mono font-bold tracking-wider text-neutral-800 uppercase mb-1">
+        {/* Strategy Note */}
+        <div className="border-t border-neutral-200 pt-3">
+          <h4 className="text-[10px] font-mono font-extrabold tracking-wider text-black uppercase mb-0.5">
             Performance Assessment & Strategy Note
           </h4>
-          <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+          <p className="text-xs text-neutral-700 leading-relaxed font-medium">
             {bandInfo.description} {bandInfo.recommendation}
           </p>
         </div>
 
-        {/* Primary Action Buttons using FluidButton */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <FluidButton
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+          <MainCTA
             variant="primary"
-            size="md"
+            size="sm"
             onClick={onRestart}
-            icon={<RotateCcw className="w-4 h-4" />}
+            icon={<RotateCcw className="w-3.5 h-3.5" />}
             iconPosition="left"
           >
             Practice Again
-          </FluidButton>
+          </MainCTA>
 
-          <FluidButton
+          <MainCTA
             variant="outline"
-            size="md"
+            size="sm"
             onClick={onReturnHome}
-            icon={<Home className="w-4 h-4" />}
+            icon={<Home className="w-3.5 h-3.5" />}
             iconPosition="left"
           >
             Return to Home
-          </FluidButton>
+          </MainCTA>
         </div>
       </div>
 
       {/* Question Review Section */}
-      <section className="space-y-4" aria-label="Question Review">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-neutral-200/80">
+      <section className="space-y-3 border border-neutral-300 rounded-xl p-4 sm:p-5 shadow-2xs bg-white" aria-label="Question Review">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2.5 border-b border-neutral-200">
           <div>
-            <h3 className="text-lg font-bold text-neutral-950">
+            <h3 className="text-base font-extrabold text-black">
               Detailed Question Review
             </h3>
-            <p className="text-xs text-neutral-500">
+            <p className="text-[11px] text-neutral-600 font-medium">
               Inspect your sentence selections, the target sentences, and academic rationales.
             </p>
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-white/90 p-1 rounded-full border border-neutral-200 text-xs font-medium shadow-2xs">
+          <div className="flex items-center gap-1 bg-neutral-100 p-0.5 border border-neutral-300 rounded-full text-[11px] font-bold">
             <button
               onClick={() => setFilter('all')}
-              className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
+              className={`px-2.5 py-0.5 rounded-full transition-colors cursor-pointer ${
                 filter === 'all'
-                  ? 'bg-neutral-950 text-white font-bold shadow-2xs'
-                  : 'text-neutral-600 hover:text-black'
+                  ? 'bg-black text-white font-extrabold shadow-2xs'
+                  : 'text-neutral-700 hover:text-black'
               }`}
             >
               All ({passages.length})
             </button>
             <button
               onClick={() => setFilter('correct')}
-              className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
+              className={`px-2.5 py-0.5 rounded-full transition-colors cursor-pointer ${
                 filter === 'correct'
-                  ? 'bg-emerald-600 text-white font-bold shadow-2xs'
-                  : 'text-neutral-600 hover:text-emerald-700'
+                  ? 'bg-emerald-700 text-white font-extrabold shadow-2xs'
+                  : 'text-neutral-700 hover:text-emerald-700'
               }`}
             >
               Correct ({stats.correctCount})
             </button>
             <button
               onClick={() => setFilter('incorrect')}
-              className={`px-3 py-1 rounded-full transition-colors cursor-pointer ${
+              className={`px-2.5 py-0.5 rounded-full transition-colors cursor-pointer ${
                 filter === 'incorrect'
-                  ? 'bg-rose-600 text-white font-bold shadow-2xs'
-                  : 'text-neutral-600 hover:text-rose-700'
+                  ? 'bg-rose-700 text-white font-extrabold shadow-2xs'
+                  : 'text-neutral-700 hover:text-rose-700'
               }`}
             >
               Incorrect ({stats.incorrectCount})
@@ -267,7 +269,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         </div>
 
         {/* List of Questions */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {reviewItems.map(({ orderIndex, passage, answer }) => {
             if (!passage) return null;
             const isExpanded = expandedPassageId === passage.id;
@@ -280,7 +282,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             return (
               <div
                 key={passage.id}
-                className="bg-white/92 backdrop-blur-md rounded-2xl border border-neutral-200/90 shadow-xs overflow-hidden transition-all"
+                className="border-b border-neutral-200 pb-2.5 transition-all text-black"
               >
                 {/* Header Row */}
                 <div
@@ -293,28 +295,28 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                       setExpandedPassageId(isExpanded ? null : passage.id);
                     }
                   }}
-                  className="p-4 sm:p-5 flex items-start justify-between gap-4 cursor-pointer hover:bg-neutral-50/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                  className="flex items-start justify-between gap-2.5 cursor-pointer hover:bg-neutral-50 rounded-lg p-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
                 >
-                  <div className="space-y-1.5 flex-1">
-                    <div className="flex flex-wrap items-center gap-2 font-mono">
-                      <span className="text-xs font-bold text-neutral-500">
+                  <div className="space-y-1 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5 font-mono">
+                      <span className="text-[11px] font-extrabold text-black">
                         Q{orderIndex + 1}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[11px] font-medium uppercase bg-neutral-100 text-neutral-700">
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border border-neutral-300 bg-neutral-100 text-black">
                         {passage.subject}
                       </span>
                       {isCorrect ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-700 text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 text-emerald-700 text-[11px] font-extrabold">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Correct [Option {targetLetter}]
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-rose-700 text-xs font-bold">
+                        <span className="inline-flex items-center gap-1 text-rose-700 text-[11px] font-extrabold">
                           <XCircle className="w-3.5 h-3.5" /> Incorrect (Picked [{userLetter}] • Correct was [{targetLetter}])
                         </span>
                       )}
                     </div>
 
-                    <h4 className="text-sm sm:text-base font-bold text-neutral-900">
+                    <h4 className="text-xs font-extrabold text-black">
                       {passage.question}
                     </h4>
                   </div>
@@ -325,26 +327,25 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                       e.stopPropagation();
                       setExpandedPassageId(isExpanded ? null : passage.id);
                     }}
-                    className="p-1 rounded-full text-neutral-400 hover:text-neutral-700 cursor-pointer"
+                    className="p-1 rounded-full text-neutral-600 hover:text-black hover:bg-neutral-100 cursor-pointer"
                     aria-label={isExpanded ? 'Collapse' : 'Expand'}
                   >
                     {isExpanded ? (
-                      <ChevronUp className="w-4 h-4" />
+                      <ChevronUp className="w-3.5 h-3.5" />
                     ) : (
-                      <ChevronDown className="w-4 h-4" />
+                      <ChevronDown className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </div>
 
                 {/* Collapsible Details */}
                 {isExpanded && (
-                  <div className="px-4 sm:px-5 pb-5 pt-2 border-t border-neutral-100 space-y-4 text-xs sm:text-sm bg-neutral-50/40 animate-in fade-in duration-200">
-                    {/* Full Passage with Highlights */}
-                    <div className="p-4 rounded-xl bg-white border border-neutral-200">
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-400 block mb-2">
+                  <div className="mt-1.5 pl-3 border-l-2 border-black space-y-2.5 text-xs animate-in fade-in duration-200 py-2 bg-neutral-50 rounded-r-xl p-3 border border-neutral-200">
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-mono font-extrabold uppercase tracking-wider text-neutral-600 block">
                         Passage Context (Sentences [A]–[E])
                       </span>
-                      <p className="font-academic text-neutral-800 leading-relaxed text-[16px]">
+                      <p className="font-serif text-neutral-800 leading-relaxed text-xs font-medium">
                         {passage.sentences.map((s, sIdx) => {
                           const sLetter = indexToLetter(sIdx);
                           const isTarget = sIdx === passage.correctAnswerIndex;
@@ -353,42 +354,41 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                           let highlight = '';
                           if (isTarget) {
                             highlight =
-                              'bg-emerald-50 text-emerald-950 font-medium px-2 py-0.5 rounded ring-1 ring-emerald-400';
+                              'bg-emerald-100 text-emerald-900 font-bold px-1 py-0.5 rounded ring-1 ring-emerald-500';
                           } else if (isUserPick) {
                             highlight =
-                              'bg-rose-50 text-rose-950 line-through decoration-rose-500/60 px-2 py-0.5 rounded ring-1 ring-rose-300';
+                              'bg-rose-100 text-rose-900 font-bold line-through decoration-rose-600 px-1 py-0.5 rounded ring-1 ring-rose-500';
                           }
 
                           return (
                             <span key={sIdx} className={highlight}>
-                              <strong className="font-mono text-xs opacity-75">[{sLetter}]</strong> {s}{' '}
+                              <strong className="font-mono text-[10px] font-extrabold">[{sLetter}]</strong> {s}{' '}
                             </span>
                           );
                         })}
                       </p>
                     </div>
 
-                    {/* Target Sentence comparison */}
-                    <div className="space-y-2">
-                      <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950">
-                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-800 block mb-0.5">
+                    <div className="space-y-1.5">
+                      <div className="pl-2.5 py-1 border-l-2 border-emerald-600 bg-emerald-50 rounded-r-md text-emerald-900">
+                        <span className="text-[9px] font-mono font-extrabold uppercase tracking-wider text-emerald-700 block mb-0.5">
                           Target Sentence: Option [{targetLetter}]
                         </span>
-                        <div className="font-academic italic text-[15px]">
+                        <div className="font-serif italic text-xs font-medium">
                           &ldquo;[{targetLetter}] {passage.correctSentence}&rdquo;
                         </div>
                       </div>
 
                       {!isCorrect && selectedIdx !== null && selectedIdx !== undefined && (
-                        <div className="p-3.5 rounded-xl bg-rose-50/80 border border-rose-200 text-rose-950">
-                          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-rose-800 block mb-0.5">
+                        <div className="pl-2.5 py-1 border-l-2 border-rose-600 bg-rose-50 rounded-r-md text-rose-900">
+                          <span className="text-[9px] font-mono font-extrabold uppercase tracking-wider text-rose-700 block mb-0.5">
                             Your Selection: Option [{userLetter}]
                           </span>
-                          <div className="font-academic italic text-[15px]">
+                          <div className="font-serif italic text-xs font-medium">
                             &ldquo;[{userLetter}] {passage.sentences[selectedIdx]}&rdquo;
                           </div>
                           {passage.distractorExplanations[selectedIdx] && (
-                            <p className="mt-1 text-xs text-rose-900">
+                            <p className="mt-0.5 text-[10px] text-rose-800 font-medium">
                               {passage.distractorExplanations[selectedIdx]}
                             </p>
                           )}
@@ -396,12 +396,11 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                       )}
                     </div>
 
-                    {/* Academic Explanation */}
-                    <div className="p-4 rounded-xl bg-white border border-neutral-200">
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-neutral-500 block mb-1">
+                    <div className="space-y-0.5">
+                      <span className="text-[9px] font-mono font-extrabold uppercase tracking-wider text-neutral-600 block">
                         Academic Explanation
                       </span>
-                      <p className="text-neutral-700 leading-relaxed text-xs sm:text-sm">
+                      <p className="text-neutral-800 leading-relaxed text-xs font-medium">
                         {passage.explanation}
                       </p>
                     </div>

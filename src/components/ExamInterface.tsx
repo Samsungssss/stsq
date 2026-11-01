@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, Type } from 'lucide-react';
 import { Passage, PracticeSession, UserAnswer } from '../types/question';
 import { PassageDisplay } from './PassageDisplay';
 import { LetterOptionGroup } from './LetterOptionGroup';
 import { AnswerFeedback } from './AnswerFeedback';
-import { validateAnswer, indexToLetter } from '../utils/answerValidation';
-import { FluidButton } from './FluidButton';
+import { validateAnswer } from '../utils/answerValidation';
+import { MainCTA } from './MainCTA';
+import { TextReveal } from './TextReveal';
 
 interface ExamInterfaceProps {
   passages: Passage[];
@@ -14,6 +15,10 @@ interface ExamInterfaceProps {
   onUpdateAnswer: (answer: UserAnswer) => void;
   onNavigatePassage: (newIndex: number) => void;
   onFinishPractice: () => void;
+  onToggleFontSize: () => void;
+  onResetSession: () => void;
+  onExitToHome: () => void;
+  formattedTime: string;
 }
 
 export const ExamInterface: React.FC<ExamInterfaceProps> = ({
@@ -23,13 +28,15 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
   onUpdateAnswer,
   onNavigatePassage,
   onFinishPractice,
+  onToggleFontSize,
+  onExitToHome,
+  formattedTime,
 }) => {
   const currentAnswer = session.answers[currentPassage.id];
   const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(
     currentAnswer?.selectedSentenceIndex ?? null
   );
 
-  // Sync internal selection state when switching passages
   useEffect(() => {
     setSelectedSentenceIndex(currentAnswer?.selectedSentenceIndex ?? null);
   }, [currentPassage.id, currentAnswer?.selectedSentenceIndex]);
@@ -81,26 +88,38 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
   };
 
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      {/* Question Prompt Card */}
-      <section
-        className="bg-white/92 backdrop-blur-md rounded-2xl border border-neutral-200/90 shadow-xs p-5 sm:p-7 space-y-2"
-        aria-label="TOEFL Question Section"
-      >
-        <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-neutral-500 uppercase">
-          <span>Question {session.currentPassageIndex + 1} of {passages.length}</span>
-          <span className="text-neutral-300">•</span>
-          <span>{currentPassage.subject}</span>
-          <span className="text-neutral-300">•</span>
-          <span className="text-neutral-700">{currentPassage.topicCategory}</span>
+    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 bg-white text-black min-h-screen">
+      {/* Single Minimal Status Header Line */}
+      <div className="flex items-center justify-between border-b border-neutral-200 pb-2.5 font-mono text-xs text-black">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-black animate-pulse shrink-0" />
+          <span className="font-extrabold text-black">
+            Question {session.currentPassageIndex + 1} of {passages.length}
+          </span>
+          <span className="text-neutral-400">•</span>
+          <span className="font-semibold text-neutral-700">{currentPassage.subject}</span>
         </div>
 
-        <h2 className="text-lg sm:text-xl font-bold text-neutral-950 tracking-tight leading-snug">
+        <div className="flex items-center gap-3">
+          <span className="text-neutral-600 font-semibold">{formattedTime}</span>
+        </div>
+      </div>
+
+      {/* Question Prompt */}
+      <section aria-label="TOEFL Question Section" className="space-y-1 py-1">
+        <TextReveal
+          as="h2"
+          split="words"
+          effect="rise"
+          duration={0.4}
+          key={currentPassage.id}
+          className="text-base sm:text-lg font-extrabold text-black tracking-tight leading-snug"
+        >
           {currentPassage.question}
-        </h2>
+        </TextReveal>
       </section>
 
-      {/* Academic Passage with [A] to [E] Labeled Sentences */}
+      {/* Academic Passage with Labeled Sentences */}
       <section aria-label="Reading Passage Section">
         <PassageDisplay
           passage={currentPassage}
@@ -112,7 +131,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
         />
       </section>
 
-      {/* Answer Options: ONLY the five letter buttons A, B, C, D, E */}
+      {/* Answer Options: Letter Buttons A, B, C, D, E */}
       <section aria-label="Answer Options Section">
         <LetterOptionGroup
           selectedSentenceIndex={selectedSentenceIndex}
@@ -123,37 +142,76 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
         />
       </section>
 
-      {/* Submission Control (when not submitted yet) */}
-      {!isSubmitted && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/92 backdrop-blur-md rounded-2xl border border-neutral-200/90 p-4 sm:p-5 shadow-xs">
-          <div className="text-xs text-neutral-600 flex items-center gap-2 font-mono">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                selectedSentenceIndex !== null ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-300'
-              }`}
-            />
-            <span>
-              {selectedSentenceIndex !== null
-                ? `Option [${indexToLetter(selectedSentenceIndex)}] selected. Click Check Answer to evaluate.`
-                : 'Select letter A, B, C, D, or E above to submit your selection.'}
-            </span>
-          </div>
+      {/* Unified Action & Navigation Control Bar Directly Below Answer Options */}
+      <nav
+        className="pt-3 border-t border-neutral-200 flex flex-wrap items-center justify-between gap-3"
+        aria-label="Exam Action Controls"
+      >
+        {/* Pagination Controls */}
+        <div className="flex items-center gap-2">
+          <MainCTA
+            variant="outline"
+            size="sm"
+            onClick={() => onNavigatePassage(session.currentPassageIndex - 1)}
+            disabled={isFirstQuestion}
+            icon={<ChevronLeft className="w-3.5 h-3.5" />}
+            iconPosition="left"
+          >
+            Previous
+          </MainCTA>
 
-          <FluidButton
+          <MainCTA
+            variant="outline"
+            size="sm"
+            onClick={() => onNavigatePassage(session.currentPassageIndex + 1)}
+            disabled={isLastQuestion}
+            icon={<ChevronRight className="w-3.5 h-3.5" />}
+            iconPosition="right"
+          >
+            Next
+          </MainCTA>
+        </div>
+
+        {/* Primary Evaluation Action */}
+        {!isSubmitted && (
+          <MainCTA
             variant="primary"
-            size="md"
+            size="sm"
             onClick={handleCheckAnswer}
             disabled={selectedSentenceIndex === null}
             className="w-full sm:w-auto"
           >
             Check Answer
-          </FluidButton>
-        </div>
-      )}
+          </MainCTA>
+        )}
 
-      {/* Answer Feedback & Explanations (when submitted) */}
+        {/* Secondary Utility Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onToggleFontSize}
+            className="h-9 px-3 rounded-full border border-neutral-300 bg-white hover:bg-neutral-100 text-black text-xs font-mono font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer"
+            title="Toggle text size"
+            aria-label="Toggle text size"
+          >
+            <Type className="w-3.5 h-3.5 text-neutral-600" />
+            <span className="uppercase">{session.fontSize}</span>
+          </button>
+
+          <MainCTA
+            variant="outline"
+            size="sm"
+            onClick={onExitToHome}
+            icon={<Home className="w-3.5 h-3.5" />}
+            iconPosition="left"
+          >
+            Home
+          </MainCTA>
+        </div>
+      </nav>
+
+      {/* Answer Feedback & Explanations (Appears when submitted) */}
       {isSubmitted && currentAnswer && (
-        <section aria-label="Answer Feedback">
+        <section aria-label="Answer Feedback" className="pt-2">
           <AnswerFeedback
             passage={currentPassage}
             userAnswer={currentAnswer}
@@ -163,50 +221,6 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
           />
         </section>
       )}
-
-      {/* Distraction-Free Bottom Navigation Toolbar */}
-      <nav
-        className="flex items-center justify-between pt-4 border-t border-neutral-200/80 text-sm font-medium"
-        aria-label="Question Pagination"
-      >
-        <FluidButton
-          variant="outline"
-          size="sm"
-          onClick={() => onNavigatePassage(session.currentPassageIndex - 1)}
-          disabled={isFirstQuestion}
-          icon={<ChevronLeft className="w-4 h-4" />}
-          iconPosition="left"
-        >
-          Previous
-        </FluidButton>
-
-        <div className="text-xs font-mono font-medium text-neutral-500">
-          Passage {String(session.currentPassageIndex + 1).padStart(2, '0')} / {passages.length}
-        </div>
-
-        {isLastQuestion ? (
-          <FluidButton
-            variant="primary"
-            size="sm"
-            onClick={onFinishPractice}
-            icon={<ChevronRight className="w-4 h-4" />}
-            iconPosition="right"
-            data-testid="finish-practice-nav-btn"
-          >
-            Finish Practice
-          </FluidButton>
-        ) : (
-          <FluidButton
-            variant="outline"
-            size="sm"
-            onClick={() => onNavigatePassage(session.currentPassageIndex + 1)}
-            icon={<ChevronRight className="w-4 h-4" />}
-            iconPosition="right"
-          >
-            Next
-          </FluidButton>
-        )}
-      </nav>
     </main>
   );
 };

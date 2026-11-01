@@ -1,6 +1,7 @@
 import React from 'react';
-import { AlertCircle, X } from 'lucide-react';
-import { FluidButton } from './FluidButton';
+import { AlertCircle } from 'lucide-react';
+import { BottomSheet } from './BottomSheet';
+import { MainCTA } from './MainCTA';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -23,62 +24,44 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onCancel,
   isDestructive = false,
 }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/40 backdrop-blur-xs animate-in fade-in duration-150">
-      <div
-        className="bg-white/95 backdrop-blur-md rounded-2xl border border-neutral-200 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in zoom-in-95 duration-150"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center ${
-                isDestructive
-                  ? 'bg-rose-100 text-rose-700'
-                  : 'bg-neutral-100 text-neutral-800'
-              }`}
-            >
-              <AlertCircle className="w-5 h-5" />
-            </div>
-            <h3
-              id="modal-title"
-              className="text-base font-bold text-neutral-900"
-            >
-              {title}
-            </h3>
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={onCancel}
+      maxWidthClass="max-w-lg"
+      title={
+        <div className="flex items-center gap-2.5">
+          <div
+            className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+              isDestructive
+                ? 'bg-rose-100 text-rose-700 border border-rose-300'
+                : 'bg-neutral-100 text-[#000000] border border-neutral-300'
+            }`}
+          >
+            <AlertCircle className="w-4 h-4" />
           </div>
-          <button
-            onClick={onCancel}
-            className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 cursor-pointer transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <span className="text-[#000000] font-extrabold">{title}</span>
         </div>
-
-        <p className="text-sm text-neutral-600 leading-relaxed">{message}</p>
-
-        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-100">
-          <FluidButton
-            variant="outline"
-            size="sm"
-            onClick={onCancel}
-          >
+      }
+      footer={
+        <div className="flex items-center gap-2.5">
+          <MainCTA variant="outline" size="sm" onClick={onCancel} iconPosition="left">
             {cancelLabel}
-          </FluidButton>
-          <FluidButton
+          </MainCTA>
+          <MainCTA
             variant={isDestructive ? 'danger' : 'primary'}
             size="sm"
             onClick={onConfirm}
+            iconPosition="right"
           >
             {confirmLabel}
-          </FluidButton>
+          </MainCTA>
         </div>
-      </div>
-    </div>
+      }
+    >
+      <p className="text-xs sm:text-sm text-[#000000] leading-relaxed font-sans font-medium">
+        {message}
+      </p>
+    </BottomSheet>
   );
 };
