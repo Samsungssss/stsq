@@ -1,0 +1,6 @@
+{
+  "name": "TOEFL Reading — Select the Sentence Practice",
+  "description": "Master the TOEFL iBT Reading 'Select the Sentence' question type with 20 original academic passages, authentic sentence-selection interaction, and instant local answer verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
