@@ -88,6 +88,12 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
           />
         </section>
 
+        <section aria-label="Question" className="mx-auto mt-8 w-full max-w-[1180px]">
+          <p className="text-base font-medium leading-relaxed text-red-700">
+            {currentPassage.question}
+          </p>
+        </section>
+
         <div className="mx-auto w-full max-w-[1180px]">
           <LetterOptionGroup
             selectedSentenceIndex={selectedSentenceIndex}
