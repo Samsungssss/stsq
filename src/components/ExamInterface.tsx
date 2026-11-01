@@ -18,6 +18,7 @@ interface ExamInterfaceProps {
   onResetSession: () => void;
   onExitToHome: () => void;
   formattedTime: string;
+  onOpenLegal: () => void;
 }
 
 export const ExamInterface: React.FC<ExamInterfaceProps> = ({
@@ -30,6 +31,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
   onToggleFontSize,
   onExitToHome,
   formattedTime,
+  onOpenLegal,
 }) => {
   const currentAnswer = session.answers[currentPassage.id];
   const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(
@@ -119,6 +121,12 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
             <AnswerFeedback passage={currentPassage} userAnswer={currentAnswer} />
           )}
         </div>
+
+        <footer className="mx-auto mt-10 w-full max-w-[1180px] text-center">
+          <button type="button" onClick={onOpenLegal} className="font-mono text-[11px] text-black/55 underline-offset-4 transition-colors hover:text-black hover:underline">
+            Terms of Use &amp; Disclaimer
+          </button>
+        </footer>
       </div>
     </main>
   );
